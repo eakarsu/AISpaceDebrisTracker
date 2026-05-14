@@ -101,8 +101,21 @@ async function initDB() {
         input_data JSONB,
         result JSONB,
         model_used VARCHAR(255),
+        user_id INTEGER,
         created_at TIMESTAMP DEFAULT NOW()
       );
+    `);
+
+    // Add TLE columns to space_objects
+    await client.query(`
+      ALTER TABLE space_objects ADD COLUMN IF NOT EXISTS tle_line1 TEXT;
+      ALTER TABLE space_objects ADD COLUMN IF NOT EXISTS tle_line2 TEXT;
+      ALTER TABLE space_objects ADD COLUMN IF NOT EXISTS tle_updated_at TIMESTAMP;
+    `);
+
+    // Add role column to users
+    await client.query(`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(50) DEFAULT 'user';
     `);
     console.log('Database tables initialized successfully');
   } catch (err) {

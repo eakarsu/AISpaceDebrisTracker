@@ -1,13 +1,20 @@
 const express = require('express');
 const { pool } = require('../database');
 const auth = require('../middleware/auth');
+const { body, validationResult } = require('express-validator');
 
 const router = express.Router();
 
 router.get('/', auth, async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM launch_windows ORDER BY window_start DESC');
-    res.json(result.rows);
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, parseInt(req.query.limit) || 20);
+    const offset = (page - 1) * limit;
+    const countResult = await pool.query('SELECT COUNT(*) FROM launch_windows');
+    const total = parseInt(countResult.rows[0].count);
+    const result = await pool.query('SELECT * FROM launch_windows ORDER BY window_start DESC LIMIT $1 OFFSET $2', [limit, offset]);
+    const data = result.rows;
+    res.json({ data, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
