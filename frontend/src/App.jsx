@@ -12,6 +12,30 @@ import OrbitalDecayPage from './pages/OrbitalDecayPage';
 import ManeuverPlanningPage from './pages/ManeuverPlanningPage';
 import DebrisAnalysisPage from './pages/DebrisAnalysisPage';
 import LaunchOptimizationPage from './pages/LaunchOptimizationPage';
+import OrbitalMapPage from './pages/OrbitalMapPage';
+import ConjunctionAlertsPage from './pages/ConjunctionAlertsPage';
+import TLESyncPage from './pages/TLESyncPage';
+import DebrisCharacterizePage from './pages/DebrisCharacterizePage';
+import CollisionClusteringPage from './pages/CollisionClusteringPage';
+import RendezvousOptimizationPage from './pages/RendezvousOptimizationPage';
+import RegulatoryCompliancePage from './pages/RegulatoryCompliancePage';
+// === Batch 08 Gaps & Frontend Mounts ===
+import CfPredictiveCollisionClusteringByLikelyFragmentationParent from './pages/CfPredictiveCollisionClusteringByLikelyFragmentationParent'
+import CfSensorFusionCombiningOpticalRadarObservationsVia from './pages/CfSensorFusionCombiningOpticalRadarObservationsVia'
+import CfMultiMissionOptimizerRecommendingConstellationReconfigurations from './pages/CfMultiMissionOptimizerRecommendingConstellationReconfigurations'
+import CfActiveDebrisRemovalLogisticsWithPayloadCapacity from './pages/CfActiveDebrisRemovalLogisticsWithPayloadCapacity'
+import CfRegulatoryComplianceScoringAgainstNationalInternationalGuidelines from './pages/CfRegulatoryComplianceScoringAgainstNationalInternationalGuidelines'
+import CfRealTimeConjunctionAlertingViaWebhooksAnd from './pages/CfRealTimeConjunctionAlertingViaWebhooksAnd'
+import GapNoAiDrivenDebrisCharacterizationFromLimited from './pages/GapNoAiDrivenDebrisCharacterizationFromLimited'
+import GapNoMultiTargetRendezvousOptimizationEndpoint from './pages/GapNoMultiTargetRendezvousOptimizationEndpoint'
+import GapNoSensorFusionMlForObservationConfidence from './pages/GapNoSensorFusionMlForObservationConfidence'
+import GapNoWebhooksOrPushNotificationsForReal from './pages/GapNoWebhooksOrPushNotificationsForReal'
+import GapNoIntegrationWithNoradTleFeedsOr from './pages/GapNoIntegrationWithNoradTleFeedsOr'
+import GapNo3dVisualizationOfDebrisCloudsAt from './pages/GapNo3dVisualizationOfDebrisCloudsAt'
+import GapNoRegulatoryComplianceTrackingBackendOuterSpace from './pages/GapNoRegulatoryComplianceTrackingBackendOuterSpace'
+import GapNoAuditLogging from './pages/GapNoAuditLogging'
+import GapNoMultiTenantOperatorSupport from './pages/GapNoMultiTenantOperatorSupport'
+import CustomViewsPage from './pages/CustomViewsPage'
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('token');
@@ -45,6 +69,16 @@ function Sidebar() {
     { path: '/ai/maneuver-planning', label: 'Maneuver Planning', icon: '\uD83C\uDFAF' },
     { path: '/ai/debris-analysis', label: 'Debris Analysis', icon: '\uD83D\uDD2C' },
     { path: '/ai/launch-optimization', label: 'Launch Optimization', icon: '\u2728' },
+    { section: 'New Features' },
+    { path: '/orbital-map', label: 'Orbital Map (SGP4)', icon: '\uD83D\uDDFA\uFE0F' },
+    { path: '/conjunction-alerts', label: 'Conjunction Alerts', icon: '\uD83D\uDEA8' },
+    { path: '/ai/debris-characterize', label: 'Debris Characterize', icon: '🧬' },
+    { path: '/ai/collision-clustering', label: 'Collision Clustering', icon: '🌐' },
+    { path: '/ai/rendezvous-optimization', label: 'Rendezvous Optimization', icon: '🛰️' },
+    { path: '/ai/regulatory-compliance', label: 'Regulatory Compliance', icon: '⚖️' },
+    { path: '/tle-sync', label: 'TLE Sync', icon: '\uD83D\uDD04' },
+    { section: 'Custom Views' },
+    { path: '/custom-views', label: 'Tracking Views', icon: '\uD83D\uDCE1' },
   ];
 
   return (
@@ -104,6 +138,30 @@ function App() {
       <Route path="/ai/maneuver-planning" element={<ProtectedRoute><AppLayout><ManeuverPlanningPage /></AppLayout></ProtectedRoute>} />
       <Route path="/ai/debris-analysis" element={<ProtectedRoute><AppLayout><DebrisAnalysisPage /></AppLayout></ProtectedRoute>} />
       <Route path="/ai/launch-optimization" element={<ProtectedRoute><AppLayout><LaunchOptimizationPage /></AppLayout></ProtectedRoute>} />
+      <Route path="/orbital-map" element={<ProtectedRoute><AppLayout><OrbitalMapPage /></AppLayout></ProtectedRoute>} />
+      <Route path="/conjunction-alerts" element={<ProtectedRoute><AppLayout><ConjunctionAlertsPage /></AppLayout></ProtectedRoute>} />
+      <Route path="/tle-sync" element={<ProtectedRoute><AppLayout><TLESyncPage /></AppLayout></ProtectedRoute>} />
+      <Route path="/ai/debris-characterize" element={<ProtectedRoute><AppLayout><DebrisCharacterizePage /></AppLayout></ProtectedRoute>} />
+      <Route path="/ai/collision-clustering" element={<ProtectedRoute><AppLayout><CollisionClusteringPage /></AppLayout></ProtectedRoute>} />
+      <Route path="/ai/rendezvous-optimization" element={<ProtectedRoute><AppLayout><RendezvousOptimizationPage /></AppLayout></ProtectedRoute>} />
+      <Route path="/ai/regulatory-compliance" element={<ProtectedRoute><AppLayout><RegulatoryCompliancePage /></AppLayout></ProtectedRoute>} />
+      {/* // === Batch 08 Gaps & Frontend Mounts === */}
+      <Route path="/cf-predictive-collision-clustering-by-likely-fragmentation-parent-with" element={<ProtectedRoute><CfPredictiveCollisionClusteringByLikelyFragmentationParent /></ProtectedRoute>} />
+      <Route path="/cf-sensor-fusion-combining-optical-radar-observations-via-ml" element={<ProtectedRoute><CfSensorFusionCombiningOpticalRadarObservationsVia /></ProtectedRoute>} />
+      <Route path="/cf-multi-mission-optimizer-recommending-constellation-reconfigurations" element={<ProtectedRoute><CfMultiMissionOptimizerRecommendingConstellationReconfigurations /></ProtectedRoute>} />
+      <Route path="/cf-active-debris-removal-logistics-with-payload-capacity-cost" element={<ProtectedRoute><CfActiveDebrisRemovalLogisticsWithPayloadCapacity /></ProtectedRoute>} />
+      <Route path="/cf-regulatory-compliance-scoring-against-national-international-guidelines" element={<ProtectedRoute><CfRegulatoryComplianceScoringAgainstNationalInternationalGuidelines /></ProtectedRoute>} />
+      <Route path="/cf-real-time-conjunction-alerting-via-webhooks-and-pager-style-escalation" element={<ProtectedRoute><CfRealTimeConjunctionAlertingViaWebhooksAnd /></ProtectedRoute>} />
+      <Route path="/gap-no-ai-driven-debris-characterization-from-limited-observations-frontend" element={<ProtectedRoute><GapNoAiDrivenDebrisCharacterizationFromLimited /></ProtectedRoute>} />
+      <Route path="/gap-no-multi-target-rendezvous-optimization-endpoint" element={<ProtectedRoute><GapNoMultiTargetRendezvousOptimizationEndpoint /></ProtectedRoute>} />
+      <Route path="/gap-no-sensor-fusion-ml-for-observation-confidence" element={<ProtectedRoute><GapNoSensorFusionMlForObservationConfidence /></ProtectedRoute>} />
+      <Route path="/gap-no-webhooks-or-push-notifications-for-real-time-conjunction" element={<ProtectedRoute><GapNoWebhooksOrPushNotificationsForReal /></ProtectedRoute>} />
+      <Route path="/gap-no-integration-with-norad-tle-feeds-or-jspoc" element={<ProtectedRoute><GapNoIntegrationWithNoradTleFeedsOr /></ProtectedRoute>} />
+      <Route path="/gap-no-3d-visualization-of-debris-clouds-at-the" element={<ProtectedRoute><GapNo3dVisualizationOfDebrisCloudsAt /></ProtectedRoute>} />
+      <Route path="/gap-no-regulatory-compliance-tracking-backend-outer-space-treaty" element={<ProtectedRoute><GapNoRegulatoryComplianceTrackingBackendOuterSpace /></ProtectedRoute>} />
+      <Route path="/gap-no-audit-logging" element={<ProtectedRoute><GapNoAuditLogging /></ProtectedRoute>} />
+      <Route path="/gap-no-multi-tenant-operator-support" element={<ProtectedRoute><GapNoMultiTenantOperatorSupport /></ProtectedRoute>} />
+      <Route path="/custom-views" element={<ProtectedRoute><AppLayout><CustomViewsPage /></AppLayout></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );

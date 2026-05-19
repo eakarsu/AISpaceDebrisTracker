@@ -13,8 +13,13 @@ async function request(url, options = {}) {
     ...options,
     headers: getHeaders()
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Request failed');
+  let data = null;
+  try { data = await res.json(); } catch (_) { data = null; }
+  if (!res.ok) {
+    const msg = (data && data.error) || 'Request failed';
+    if (res.status === 503) throw new Error(`AI provider not configured: ${msg}`);
+    throw new Error(msg);
+  }
   return data;
 }
 
@@ -64,5 +69,41 @@ export const api = {
   maneuverPlanning: (data) => request('/ai/maneuver-planning', { method: 'POST', body: JSON.stringify(data) }),
   debrisAnalysis: (data) => request('/ai/debris-analysis', { method: 'POST', body: JSON.stringify(data) }),
   launchOptimization: (data) => request('/ai/launch-optimization', { method: 'POST', body: JSON.stringify(data) }),
-  getAiHistory: () => request('/ai/history'),
+  getAiHistory: (params = '') => request(`/ai/history${params ? '?' + params : ''}`),
+
+  // New: SGP4 Propagator
+  propagate: (data) => request('/propagate', { method: 'POST', body: JSON.stringify(data) }),
+
+  // New: Conjunction screening
+  screenConjunctions: (data) => request('/conjunction-events/screen', { method: 'POST', body: JSON.stringify(data) }),
+  autoScreenConjunctions: (data) => request('/conjunction-events/auto-screen', { method: 'POST', body: JSON.stringify(data) }),
+
+  // New: TLE sync
+  syncTLE: () => request('/space-objects/sync-tle'),
+
+  // New: Reentry monitoring
+  reentryPredict: (data) => request('/ai/reentry-predict', { method: 'POST', body: JSON.stringify(data) }),
+  reentryMonitor: () => request('/ai/reentry-monitor', { method: 'POST', body: JSON.stringify({}) }),
+
+  // Debris characterization & collision clustering
+  debrisCharacterize: (data) => request('/ai/debris-characterize', { method: 'POST', body: JSON.stringify(data) }),
+  collisionClustering: (data) => request('/ai/collision-clustering', { method: 'POST', body: JSON.stringify(data) }),
+
+  // Mechanical backlog: rendezvous + regulatory compliance
+  rendezvousOptimization: (data) => request('/ai/rendezvous-optimization', { method: 'POST', body: JSON.stringify(data) }),
+  regulatoryCompliance: (data) => request('/ai/regulatory-compliance', { method: 'POST', body: JSON.stringify(data) }),
 };
+
+// Also export a default axios-compatible wrapper for new pages
+const axiosLike = {
+  get: (url) => {
+    const cleanUrl = url.replace('/api', '');
+    return request(cleanUrl).then(data => ({ data }));
+  },
+  post: (url, body) => {
+    const cleanUrl = url.replace('/api', '');
+    return request(cleanUrl, { method: 'POST', body: JSON.stringify(body) }).then(data => ({ data }));
+  },
+};
+
+export default axiosLike;
