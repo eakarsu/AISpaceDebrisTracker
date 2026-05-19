@@ -66,6 +66,9 @@ app.use('/api/gap-no-regulatory-compliance-tracking-backend-outer-space-treaty',
 app.use('/api/gap-no-audit-logging', require('./routes/gapNoAuditLogging'));
 app.use('/api/gap-no-multi-tenant-operator-support', require('./routes/gapNoMultiTenantOperatorSupport'));
 
+// === Custom Views (bespoke) ===
+app.use('/api/custom-views', require('./routes/customViews'));
+
 app.listen(PORT, () => {
       console.log(`Space Debris Tracker API running on port ${PORT}`);
     });

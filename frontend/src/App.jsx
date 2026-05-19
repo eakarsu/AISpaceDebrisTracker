@@ -35,6 +35,7 @@ import GapNo3dVisualizationOfDebrisCloudsAt from './pages/GapNo3dVisualizationOf
 import GapNoRegulatoryComplianceTrackingBackendOuterSpace from './pages/GapNoRegulatoryComplianceTrackingBackendOuterSpace'
 import GapNoAuditLogging from './pages/GapNoAuditLogging'
 import GapNoMultiTenantOperatorSupport from './pages/GapNoMultiTenantOperatorSupport'
+import CustomViewsPage from './pages/CustomViewsPage'
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('token');
@@ -76,6 +77,8 @@ function Sidebar() {
     { path: '/ai/rendezvous-optimization', label: 'Rendezvous Optimization', icon: '🛰️' },
     { path: '/ai/regulatory-compliance', label: 'Regulatory Compliance', icon: '⚖️' },
     { path: '/tle-sync', label: 'TLE Sync', icon: '\uD83D\uDD04' },
+    { section: 'Custom Views' },
+    { path: '/custom-views', label: 'Tracking Views', icon: '\uD83D\uDCE1' },
   ];
 
   return (
@@ -158,6 +161,7 @@ function App() {
       <Route path="/gap-no-regulatory-compliance-tracking-backend-outer-space-treaty" element={<ProtectedRoute><GapNoRegulatoryComplianceTrackingBackendOuterSpace /></ProtectedRoute>} />
       <Route path="/gap-no-audit-logging" element={<ProtectedRoute><GapNoAuditLogging /></ProtectedRoute>} />
       <Route path="/gap-no-multi-tenant-operator-support" element={<ProtectedRoute><GapNoMultiTenantOperatorSupport /></ProtectedRoute>} />
+      <Route path="/custom-views" element={<ProtectedRoute><AppLayout><CustomViewsPage /></AppLayout></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
