@@ -580,4 +580,75 @@ Respond ONLY with JSON:
   }
 });
 
+// Multi-target rendezvous optimization (canonical path per audit backlog)
+router.post('/multi-target-rendezvous', auth, aiRateLimiter, async (req, res) => {
+  try {
+    const { targets = [] } = req.body || {};
+    if (!Array.isArray(targets) || targets.length === 0) {
+      return res.status(400).json({ error: 'targets[] is required' });
+    }
+    const recent = await pool.query(
+      `SELECT name, object_type, perigee, apogee, status FROM space_objects ORDER BY created_at DESC LIMIT 20`
+    ).catch(() => ({ rows: [] }));
+
+    const prompt = `Plan an optimal multi-target rendezvous sequence for a servicing / debris-removal spacecraft.
+Targets (id, optional TLE, last_known orbit, priority): ${JSON.stringify(targets).slice(0, 2500)}
+Recent tracked objects for context: ${JSON.stringify(recent.rows).slice(0, 1500)}
+
+Respond ONLY with JSON:
+{
+  "sequence": [{"target_id": "...", "order": <number>, "estimated_dv_mps": <number>, "transfer_days": <number>, "rationale": "..."}],
+  "total_delta_v": <number>,
+  "time_window": "<string, e.g. 'YYYY-MM-DD to YYYY-MM-DD'>",
+  "risks": ["..."],
+  "rationale": "..."
+}`;
+    const text = await callOpenRouter(prompt);
+    const parsed = parseAIJson(text);
+    if (!parsed) return res.status(422).json({ error: 'AI returned invalid JSON', raw: text });
+    await saveAnalysis('multi-target-rendezvous', req.body, parsed, process.env.OPENROUTER_MODEL || 'anthropic/claude-3-5-sonnet-20241022', req.user?.id);
+    res.json({ analysis: parsed });
+  } catch (err) {
+    const code = err.statusCode || 500;
+    res.status(code).json({ error: err.message });
+  }
+});
+
+// Regulatory compliance scoring (canonical path per audit backlog)
+router.post('/regulatory-compliance-score', auth, aiRateLimiter, async (req, res) => {
+  try {
+    const { mission } = req.body || {};
+    if (!mission || typeof mission !== 'object') {
+      return res.status(400).json({ error: 'mission object is required' });
+    }
+
+    const prompt = `Score a proposed space mission against major regulatory and debris-mitigation frameworks (UN COPUOS, FCC, ITU, ESA).
+Mission description: ${String(mission.description || 'unspecified').slice(0, 1500)}
+Orbit: ${JSON.stringify(mission.orbit || 'unspecified')}
+Debris mitigation plan: ${JSON.stringify(mission.debris_mitigation_plan || {}).slice(0, 1500)}
+End-of-life plan: ${JSON.stringify(mission.end_of_life_plan || {}).slice(0, 1500)}
+
+Respond ONLY with JSON:
+{
+  "overall_score": <0-100>,
+  "scores_by_framework": {
+    "UNCOPUOS": <0-100>,
+    "FCC": <0-100>,
+    "ITU": <0-100>,
+    "ESA": <0-100>
+  },
+  "gaps": ["..."],
+  "recommendations": ["..."]
+}`;
+    const text = await callOpenRouter(prompt);
+    const parsed = parseAIJson(text);
+    if (!parsed) return res.status(422).json({ error: 'AI returned invalid JSON', raw: text });
+    await saveAnalysis('regulatory-compliance-score', req.body, parsed, process.env.OPENROUTER_MODEL || 'anthropic/claude-3-5-sonnet-20241022', req.user?.id);
+    res.json({ analysis: parsed });
+  } catch (err) {
+    const code = err.statusCode || 500;
+    res.status(code).json({ error: err.message });
+  }
+});
+
 module.exports = router;

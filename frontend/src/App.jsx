@@ -19,6 +19,9 @@ import DebrisCharacterizePage from './pages/DebrisCharacterizePage';
 import CollisionClusteringPage from './pages/CollisionClusteringPage';
 import RendezvousOptimizationPage from './pages/RendezvousOptimizationPage';
 import RegulatoryCompliancePage from './pages/RegulatoryCompliancePage';
+import CodexCustomVizFeature from './pages/CodexCustomVizFeature';
+import CodexOperationsFeature from './pages/CodexOperationsFeature';
+
 // === Batch 08 Gaps & Frontend Mounts ===
 import CfPredictiveCollisionClusteringByLikelyFragmentationParent from './pages/CfPredictiveCollisionClusteringByLikelyFragmentationParent'
 import CfSensorFusionCombiningOpticalRadarObservationsVia from './pages/CfSensorFusionCombiningOpticalRadarObservationsVia'
@@ -126,6 +129,9 @@ function AppLayout({ children }) {
 function App() {
   return (
     <Routes>
+        <Route path="/codex/custom-viz" element={<ProtectedRoute><CodexCustomVizFeature /></ProtectedRoute>} />
+        <Route path="/codex/operations" element={<ProtectedRoute><CodexOperationsFeature /></ProtectedRoute>} />
+
       <Route path="/login" element={<LoginPage />} />
       <Route path="/dashboard" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
       <Route path="/space-objects" element={<ProtectedRoute><AppLayout><SpaceObjectsPage /></AppLayout></ProtectedRoute>} />

@@ -36,3 +36,12 @@ Pattern reused: `callOpenRouter` + `parseAIJson` + `saveAnalysis(...) → ai_ana
 ## Apply pass 3 (frontend)
 
 LEFT-AS-IS. Pass-2 endpoints (`debris-characterize`, `collision-clustering`) already have dedicated pages: `frontend/src/pages/DebrisCharacterizePage.jsx`, `CollisionClusteringPage.jsx`, with API helpers in `frontend/src/api.js`. JWT Bearer auth and error surfacing already in place. Idempotent.
+
+## Apply pass 6 (close-out)
+- Implemented:
+  - `POST /api/ai/multi-target-rendezvous` — optimize rendezvous sequence across debris/service targets; returns sequence, total delta-v, time window, risks, rationale.
+  - `POST /api/ai/regulatory-compliance-score` — score mission against UNCOPUOS / FCC / ITU / ESA frameworks; returns overall score, per-framework scores, gaps, recommendations.
+- Files touched: `backend/src/routes/ai.js` (append-only).
+- Syntax check: `node --check backend/src/routes/ai.js` — PASS
+- Smoke test: not performed (no server start per pass constraints; OPENROUTER_API_KEY required for live call).
+- Backlog remaining after pass 6: NEEDS-CREDS (NORAD/JSPOC/Space-Track feeds), NEEDS-PRODUCT-DECISION (webhook alerting infra, 3D visualization).
