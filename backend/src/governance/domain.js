@@ -1,0 +1,13 @@
+'use strict';
+function evaluate(input={}) {
+  const errors=[]; const site=input.site||{}; const assets=input.assets||[]; const observations=input.observations||[]; const job=input.job||{}; const decision=input.decision||{}; const execution=input.execution||{}; const validation=input.validation||{};
+  if(!site.id||!site.permissionVersion||!site.safetyPolicyVersion||!site.retentionDays) errors.push('operator site permissions, safety policy, and retention required');
+  const assetIds=new Set(); for(const asset of assets){if(!asset.id||assetIds.has(String(asset.id))||!asset.catalogVersion||!asset.status||!asset.constraints?.minimumMissDistanceKm||!asset.provenanceRef)errors.push('versioned orbital asset and constraints required');assetIds.add(String(asset.id));}
+  const observationIds=new Set(); for(const event of observations){if(!event.id||observationIds.has(String(event.id))||!assetIds.has(String(event.assetId))||!event.observedAt||!event.receivedAt||!event.sourceVersion||!event.unit||!Number.isFinite(event.value)||event.duplicate||event.stale)errors.push('timestamped deduplicated observation invalid');observationIds.add(String(event.id));}
+  if(!job.id||!job.ownerId||!['planned','submitted','approved','executing','completed','failed','manual_recovery'].includes(job.status)||!job.constraintVersion)errors.push('durable debris job invalid');
+  if(!decision.id||decision.jobId!==job.id||!decision.modelVersion||!decision.uncertaintyNote||!decision.observationIds?.length||decision.observationIds.some(id=>!observationIds.has(String(id)))||decision.autonomousDispatch||decision.operatorApproved!==true||!decision.approvedBy||decision.approvedBy===job.ownerId||decision.safetyCheckPassed!==true)errors.push('independently approved safe decision required');
+  if(!['queued','receipt_recorded','failed','manual_recovery'].includes(execution.status)||((execution.status==='receipt_recorded')!==Boolean(execution.receiptRef))||!execution.feedbackAt)errors.push('execution feedback or recovery state required');
+  for(const key of ['datasetVersion','forecastError','latencyMs','missedEvents','realizedOutcomeRecorded'])if(validation[key]===undefined)errors.push(`validation ${key} required`); if(validation.constraintViolations!==0)errors.push('historical constraint violations must be zero');
+  return {errors,result:{assetCount:assetIds.size,jobId:job.id,disposition:errors.length?'revise':'operator-reviewed'},assumptions:['No maneuver, launch, or hardware execution is represented without a provider receipt'],uncertainty:{externalSensorsConnected:false,operatorReviewRequired:true}};
+}
+module.exports={evaluate};

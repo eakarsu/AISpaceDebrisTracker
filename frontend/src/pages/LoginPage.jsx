@@ -25,11 +25,6 @@ export default function LoginPage() {
     }
   };
 
-  const fillDemo = () => {
-    setEmail('admin@spacedebris.gov');
-    setPassword('SpaceDebris2024!');
-  };
-
   return (
     <div className="login-page">
       <div className="login-card">
@@ -50,10 +45,6 @@ export default function LoginPage() {
           </div>
           <button type="submit" className="btn btn-primary btn-lg" disabled={loading} style={{ width: '100%', justifyContent: 'center' }}>
             {loading ? 'Authenticating...' : 'Sign In'}
-          </button>
-          <div className="login-divider"><span>OR</span></div>
-          <button type="button" className="btn btn-demo btn-lg" onClick={fillDemo} style={{ width: '100%', justifyContent: 'center' }}>
-            {'\uD83D\uDD11'} Fill Demo Credentials
           </button>
         </form>
       </div>

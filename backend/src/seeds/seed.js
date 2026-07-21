@@ -2,7 +2,15 @@ require('dotenv').config({ path: require('path').join(__dirname, '../../../.env'
 const bcrypt = require('bcryptjs');
 const { pool, initDB } = require('../database');
 
+function requireDestructiveSeed() {
+  if (process.env.ALLOW_DESTRUCTIVE_SEED !== '1') throw new Error('Set ALLOW_DESTRUCTIVE_SEED=1 to reset and seed the database');
+  if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is required');
+  if ((process.env.SEED_ADMIN_PASSWORD || '').length < 12) throw new Error('SEED_ADMIN_PASSWORD must contain at least 12 characters');
+  return process.env.SEED_ADMIN_PASSWORD;
+}
+
 async function seed() {
+  const seedPassword = requireDestructiveSeed();
   console.log('Initializing database tables...');
   await initDB();
 
@@ -28,12 +36,12 @@ async function seed() {
     await client.query("ALTER SEQUENCE debris_removal_missions_id_seq RESTART WITH 1");
 
     // Seed user
-    const hashedPassword = await bcrypt.hash('SpaceDebris2024!', 10);
+    const hashedPassword = await bcrypt.hash(seedPassword, 12);
     await client.query(
       "INSERT INTO users (email, password, name) VALUES ($1, $2, $3)",
       ['admin@spacedebris.gov', hashedPassword, 'Mission Commander']
     );
-    console.log('User seeded: admin@spacedebris.gov / SpaceDebris2024!');
+    console.log('Seed administrator created; password was supplied through the environment');
 
     // Seed 15 space objects
     const spaceObjects = [
