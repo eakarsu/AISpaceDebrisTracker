@@ -11,7 +11,7 @@ function getStatusClass(status) {
   return 'status-low';
 }
 
-export default function CrudPage({ title, subtitle, icon, columns, fields, fetchAll, fetchOne, create, update, remove, formatRow }) {
+export default function CrudPage({ title, subtitle, icon, columns, fields, fetchAll, fetchOne, create, update, remove, formatRow: _formatRow }) {
   const [items, setItems] = useState([]);
   const [selected, setSelected] = useState(null);
   const [showDetail, setShowDetail] = useState(false);

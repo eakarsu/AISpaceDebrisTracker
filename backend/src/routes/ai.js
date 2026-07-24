@@ -34,7 +34,8 @@ async function callOpenRouter(prompt, systemPrompt) {
     e.statusCode = 503;
     throw e;
   }
-  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+  const baseUrl = process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
+  const response = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
@@ -52,7 +53,9 @@ async function callOpenRouter(prompt, systemPrompt) {
       max_tokens: 2000
     })
   });
-  const data = await response.json();
+  const rawBody = await response.text();
+  if (!response.ok) throw new Error(`OpenRouter API error (${response.status}): ${rawBody}`);
+  const data = JSON.parse(rawBody);
   if (data.error) {
     throw new Error(data.error.message || 'OpenRouter API error');
   }
@@ -60,12 +63,10 @@ async function callOpenRouter(prompt, systemPrompt) {
 }
 
 async function saveAnalysis(feature, inputData, result, model, userId) {
-  try {
-    await pool.query(
-      'INSERT INTO ai_analyses (feature, input_data, result, model_used, user_id) VALUES ($1, $2, $3, $4, $5)',
-      [feature, JSON.stringify(inputData), JSON.stringify({ analysis: result }), model, userId || null]
-    );
-  } catch (e) { console.error('Failed to save analysis:', e.message); }
+  await pool.query(
+    'INSERT INTO ai_analyses (feature, input_data, result, model_used, user_id) VALUES ($1, $2, $3, $4, $5)',
+    [feature, JSON.stringify(inputData), JSON.stringify({ analysis: result }), model, userId || null]
+  );
 }
 
 // Collision Probability Calculator

@@ -19,12 +19,16 @@ load_env_key() {
   [ -z "$parsed" ] || export "$key=$parsed"
 }
 
-for key in DATABASE_URL JWT_SECRET GOVERNANCE_TENANT_ID OPENROUTER_API_KEY ENABLE_GENERATED_FEATURES ALLOW_SCHEMA_MIGRATION ALLOW_DESTRUCTIVE_SEED BACKEND_PORT FRONTEND_PORT SEED_ADMIN_PASSWORD; do
-  load_env_key "$key"
-done
+if [ -f "$ENV_FILE" ]; then
+  set -a
+  # shellcheck disable=SC1090
+  source "$ENV_FILE"
+  set +a
+fi
 
 BACKEND_PORT="${BACKEND_PORT:-3001}"
 FRONTEND_PORT="${FRONTEND_PORT:-3000}"
+export ENABLE_GENERATED_FEATURES="${ENABLE_GENERATED_FEATURES:-true}"
 
 fail() {
   printf 'error: %s\n' "$*" >&2
@@ -61,15 +65,21 @@ start_services() {
   check_config
   [ -d "$API_DIR/node_modules" ] || fail "backend dependencies are missing; install them explicitly"
   [ -d "$UI_DIR/node_modules" ] || fail "frontend dependencies are missing; install them explicitly"
-  (cd "$API_DIR" && PORT="$BACKEND_PORT" node src/server.js) &
+  for port in "$BACKEND_PORT" "$FRONTEND_PORT"; do
+    lsof -nP -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1 && fail "port $port is already in use"
+  done
+  if [ "${MIGRATE_ON_START:-false}" = "true" ]; then
+    psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$MIGRATION_DIR/001_governed_workflows.sql"
+  fi
+  (cd "$API_DIR" && exec node src/server.js) &
   api_pid=$!
-  (cd "$UI_DIR" && npm run dev -- --host 127.0.0.1 --port "$FRONTEND_PORT") &
+  (cd "$UI_DIR" && exec ./node_modules/.bin/vite --host 127.0.0.1 --port "$FRONTEND_PORT" --strictPort) &
   ui_pid=$!
   trap 'kill "$api_pid" "$ui_pid" 2>/dev/null || true; wait "$api_pid" "$ui_pid" 2>/dev/null || true' INT TERM EXIT
   wait "$api_pid" "$ui_pid"
 }
 
-case "${1:-check}" in
+case "${1:-start}" in
   check) check_config ;;
   migrate) migrate ;;
   start) start_services ;;

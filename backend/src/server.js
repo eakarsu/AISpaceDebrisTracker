@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const { pool } = require('./database');
+const { prepareRuntime } = require('./runtime-bootstrap');
 
 const authRoutes = require('./routes/auth');
 const spaceObjectsRoutes = require('./routes/spaceObjects');
@@ -52,6 +53,7 @@ app.use('/api/governance', require('./governance'));
 
 async function start() {
   try {
+    await prepareRuntime();
     await pool.query('SELECT 1');
     if (generatedRoutesEnabled) app.use('/api/collision-clustering', require('./routes/collisionClustering'));
 

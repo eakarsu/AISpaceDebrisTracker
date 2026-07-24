@@ -24,7 +24,7 @@ export default function ConjunctionAlertsPage() {
       const res = await api.get(`/conjunction-events?${params}`);
       setEvents(res.data.data || res.data);
       if (res.data.pagination) setPagination(res.data.pagination);
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to load conjunction events');
     } finally {
       setLoading(false);
