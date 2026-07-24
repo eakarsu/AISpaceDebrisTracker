@@ -25,7 +25,7 @@ export default function CrudPage({ title, subtitle, icon, columns, fields, fetch
     setLoading(true);
     try {
       const data = await fetchAll();
-      setItems(data);
+      setItems(Array.isArray(data) ? data : (data?.items || data?.data || data?.rows || []));
     } catch (err) {
       setError(err.message);
     } finally {
