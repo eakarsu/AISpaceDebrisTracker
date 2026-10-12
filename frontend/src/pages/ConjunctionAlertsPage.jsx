@@ -22,10 +22,14 @@ export default function ConjunctionAlertsPage() {
       if (filter.high_risk) params.append('high_risk', 'true');
       if (filter.status) params.append('status', filter.status);
       const res = await api.get(`/conjunction-events?${params}`);
-      setEvents(res.data.data || res.data);
-      if (res.data.pagination) setPagination(res.data.pagination);
-    } catch (_err) {
-      setError('Failed to load conjunction events');
+      const records = Array.isArray(res.data) ? res.data : res.data?.data;
+      if (!Array.isArray(records)) throw new Error('The conjunction API returned an unexpected list format.');
+      setEvents(records);
+      setError('');
+      setPagination(res.data?.pagination ?? null);
+    } catch (err) {
+      setEvents([]);
+      setError(`Failed to load conjunction events: ${err.message}`);
     } finally {
       setLoading(false);
     }

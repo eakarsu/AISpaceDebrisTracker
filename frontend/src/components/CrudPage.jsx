@@ -25,8 +25,12 @@ export default function CrudPage({ title, subtitle, icon, columns, fields, fetch
     setLoading(true);
     try {
       const data = await fetchAll();
-      setItems(Array.isArray(data) ? data : (data?.items || data?.data || data?.rows || []));
+      const records = Array.isArray(data) ? data : [data?.data, data?.items, data?.rows].find(Array.isArray);
+      if (!records) throw new Error('The record API returned an unexpected list format.');
+      setItems(records);
+      setError('');
     } catch (err) {
+      setItems([]);
       setError(err.message);
     } finally {
       setLoading(false);

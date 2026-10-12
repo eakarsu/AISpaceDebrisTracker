@@ -1,3 +1,4 @@
+import FormattedAIReport from "../components/FormattedAIReport";
 import { useState } from 'react';
 import { api } from '../api';
 
@@ -13,6 +14,9 @@ export default function DebrisCharacterizePage() {
   const [error, setError] = useState('');
 
   const handleChange = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+
+
+  const presets = [["Radar fragment", {"observations": "[{\"radar_cross_section\":0.02,\"altitude_km\":780,\"inclination_deg\":98}]", "parentObject": "Possible Cosmos 1408 fragmentation family; unverified", "sizeEstimate": "Approximately 10 cm, uncertain", "materialHints": "Possible metallic fragment; composition unverified"}], ["Optical track", {"observations": "[{\"brightness_magnitude\":14.2,\"altitude_km\":620,\"track_duration_s\":45}]", "parentObject": "Unknown parent; compare with catalog before attribution", "sizeEstimate": "Size unknown; optical brightness only", "materialHints": "No material measurement available"}], ["Mixed observations", {"observations": "[{\"radar_cross_section\":0.05,\"altitude_km\":850},{\"brightness_magnitude\":12.8,\"altitude_km\":852}]", "parentObject": "Candidate breakup family, attribution unconfirmed", "sizeEstimate": "Roughly 10–30 cm pending calibration", "materialHints": "Radar and optical observations do not establish composition"}]];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,6 +56,7 @@ export default function DebrisCharacterizePage() {
         <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: 24 }}>
           <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 20 }}>Observation Inputs</h3>
           <form onSubmit={handleSubmit}>
+            <div role="group" aria-label="Complete example inputs" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>{presets.map((example) => <button key={example[0]} type="button" disabled={loading} className="btn btn-secondary" onClick={() => setForm(example[1])}>{example[0]}</button>)}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div className="form-group">
                 <label>Observations (JSON or newline-separated)</label>
@@ -106,33 +111,16 @@ export default function DebrisCharacterizePage() {
             </div>
           )}
 
-          {result && !loading && (
+          {result !== null && result !== undefined && !loading && (
             <div className="ai-result">
               <div className="ai-result-header">
                 <h3>{'🤖'} Characterization Result</h3>
               </div>
-              <div className="ai-result-body">
-                {typeof result === 'object' ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    {result.likely_origin && <div><strong>Likely Origin:</strong> {result.likely_origin}</div>}
-                    {result.size_class && <div><strong>Size Class:</strong> {result.size_class}</div>}
-                    {result.mass_estimate_kg !== undefined && <div><strong>Mass Estimate (kg):</strong> {result.mass_estimate_kg}</div>}
-                    {result.material_likely && <div><strong>Likely Material:</strong> {result.material_likely}</div>}
-                    {result.confidence !== undefined && <div><strong>Confidence:</strong> {result.confidence}</div>}
-                    {result.notes && <div><strong>Notes:</strong> {result.notes}</div>}
-                    <details>
-                      <summary style={{ cursor: 'pointer', color: 'var(--text-muted)' }}>Raw JSON</summary>
-                      <pre style={{ fontSize: 12, overflow: 'auto', background: 'var(--bg-secondary)', padding: 12, borderRadius: 8 }}>{JSON.stringify(result, null, 2)}</pre>
-                    </details>
-                  </div>
-                ) : (
-                  <pre style={{ whiteSpace: 'pre-wrap' }}>{String(result)}</pre>
-                )}
-              </div>
+              <div className="ai-result-body"><FormattedAIReport response={result} /></div>
             </div>
           )}
 
-          {!result && !loading && !error && (
+          {(result === null || result === undefined) && !loading && !error && (
             <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: 60, textAlign: 'center' }}>
               <div style={{ fontSize: 48, marginBottom: 16 }}>{'🧬'}</div>
               <h3 style={{ fontSize: 18, marginBottom: 8 }}>Ready for Analysis</h3>

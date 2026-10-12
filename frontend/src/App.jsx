@@ -1,3 +1,4 @@
+import AIReportLibrary from "./components/AIReportLibrary";
 import { Routes, Route, Navigate, useNavigate, useLocation, Link } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
@@ -112,7 +113,7 @@ function Sidebar() {
           Logout
         </button>
       </div>
-    </div>
+    <AIReportLibrary /></div>
   );
 }
 
