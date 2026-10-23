@@ -21,6 +21,7 @@ import RendezvousOptimizationPage from './pages/RendezvousOptimizationPage';
 import RegulatoryCompliancePage from './pages/RegulatoryCompliancePage';
 import CodexCustomVizFeature from './pages/CodexCustomVizFeature';
 import CodexOperationsFeature from './pages/CodexOperationsFeature';
+import FeaturePackPanel from './components/FeaturePackPanel';
 
 // === Batch 08 Gaps & Frontend Mounts ===
 import CfPredictiveCollisionClusteringByLikelyFragmentationParent from './pages/CfPredictiveCollisionClusteringByLikelyFragmentationParent'
@@ -133,7 +134,8 @@ function App() {
         <Route path="/codex/operations" element={<ProtectedRoute><CodexOperationsFeature /></ProtectedRoute>} />
 
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/dashboard" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
+      <Route path="/feature-pack" element={<ProtectedRoute><FeaturePackPanel /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
       <Route path="/space-objects" element={<ProtectedRoute><AppLayout><SpaceObjectsPage /></AppLayout></ProtectedRoute>} />
       <Route path="/satellites" element={<ProtectedRoute><AppLayout><SatellitesPage /></AppLayout></ProtectedRoute>} />
       <Route path="/conjunction-events" element={<ProtectedRoute><AppLayout><ConjunctionEventsPage /></AppLayout></ProtectedRoute>} />

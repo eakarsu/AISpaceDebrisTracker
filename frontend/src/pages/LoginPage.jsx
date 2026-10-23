@@ -9,12 +9,11 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const submitLogin = async (loginEmail, loginPassword) => {
     setError('');
     setLoading(true);
     try {
-      const data = await api.login(email, password);
+      const data = await api.login(loginEmail, loginPassword);
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       navigate('/dashboard');
@@ -22,6 +21,22 @@ export default function LoginPage() {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    await submitLogin(email, password);
+  };
+
+  const handleDemoLogin = async () => {
+    const demoEmail = import.meta.env.VITE_DEMO_EMAIL || '';
+    const demoPassword = import.meta.env.VITE_DEMO_PASSWORD || '';
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+    setError('');
+    if (demoEmail && demoPassword) {
+      await submitLogin(demoEmail, demoPassword);
     }
   };
 
@@ -45,8 +60,8 @@ export default function LoginPage() {
           </div>
           <button
             type="button"
-            onClick={() => { setEmail(import.meta.env.VITE_DEMO_EMAIL || ''); setPassword(import.meta.env.VITE_DEMO_PASSWORD || ''); setError(''); }}
-            disabled={!import.meta.env.VITE_DEMO_EMAIL || !import.meta.env.VITE_DEMO_PASSWORD}
+            onClick={handleDemoLogin}
+            disabled={loading || !import.meta.env.VITE_DEMO_EMAIL || !import.meta.env.VITE_DEMO_PASSWORD}
             aria-label="Fill demo credentials"
             style={{ width: '100%', marginBottom: '12px', padding: '10px 14px', borderRadius: '8px', border: '1px solid currentColor', background: 'transparent', cursor: 'pointer' }}
           >

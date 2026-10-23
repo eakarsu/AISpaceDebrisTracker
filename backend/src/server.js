@@ -43,6 +43,7 @@ app.use('/api/', generalLimiter);
 app.use('/api/auth', authRoutes);
 app.get('/api/health', (req, res) => res.json({ status: 'operational', timestamp: new Date().toISOString() }));
 app.use('/api', authMiddleware);
+app.use('/api/feature-pack', require('./routes/featurePackRoutes'));
 app.use('/api/space-objects', spaceObjectsRoutes);
 app.use('/api/satellites', satellitesRoutes);
 app.use('/api/conjunction-events', conjunctionEventsRoutes);
